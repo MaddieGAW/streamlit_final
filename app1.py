@@ -53,27 +53,20 @@ def main():
     # Encode the combined data
     df_encoded = pd.get_dummies(df_combined, drop_first=True)
 
-    # Separate the new encoded data
-    new_data_encoded = df_encoded.tail(1)
+   # Separate the new encoded data
+new_data_encoded = df_encoded.tail(1)
 
-    # Print out the columns of new_data_encoded and model_columns
-    st.write("Columns of new_data_encoded:", new_data_encoded.columns)
-    st.write("Model columns:", model_columns)
+# Drop columns that are not in model_columns
+new_data_encoded = new_data_encoded[model_columns]
 
-    # Ensure new_data_encoded has the same columns as the model's training data
-    missing_cols = set(model_columns) - set(new_data_encoded.columns)
-    for col in missing_cols:
-        new_data_encoded[col] = 0
-    new_data_encoded = new_data_encoded[model_columns]
-
-    # Predict the success of the project
-    if st.button('Predict'):
-        prediction = model.predict(new_data_encoded)
-        st.subheader('Prediction')
-        if prediction[0] == 1:
-            st.write('The project is predicted to be successful.')
-        else:
-            st.write('The project is predicted to not be successful.')
+# Predict the success of the project
+if st.button('Predict'):
+    prediction = model.predict(new_data_encoded)
+    st.subheader('Prediction')
+    if prediction[0] == 1:
+        st.write('The project is predicted to be successful.')
+    else:
+        st.write('The project is predicted to not be successful.')
 
 # Run the app
 if __name__ == "__main__":
