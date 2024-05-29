@@ -53,6 +53,12 @@ def main():
     # Separate the new encoded data
     new_data_encoded = df_encoded.tail(1)
 
+    # Ensure new_data_encoded has the same columns as the model's training data
+    missing_cols = set(X.columns) - set(new_data_encoded.columns)
+    for col in missing_cols:
+        new_data_encoded[col] = 0
+    new_data_encoded = new_data_encoded[X.columns]
+
     # Predict the success of the project
     if st.button('Predict'):
         prediction = model.predict(new_data_encoded)
