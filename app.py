@@ -1,11 +1,13 @@
 import streamlit as st
 import pandas as pd
+import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
-import joblib
 
 df5 = pd.read_csv('df5.csv')
+df5.dropna(inplace=True)
+df5 = pd.get_dummies(df5, drop_first=True)
 
 # Define the main function to create and run the app
 def main():
