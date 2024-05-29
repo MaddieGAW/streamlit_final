@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report
 import joblib
 
+# Load data
 df5 = pd.read_csv('df5.csv')
+df5.dropna(inplace=True)
 
 # Define the main function to create and run the app
 def main():
@@ -26,7 +25,11 @@ def main():
     office_presence = st.selectbox('Office Presence', df5['office_presence'].unique())
     external_evaluator = st.selectbox('External Evaluator', df5['external_evaluator'].unique())
 
-    # Load your data
+    # Load the trained model
+    model_path = 'model.joblib'
+    model = joblib.load(model_path)
+
+    # Prepare new data for prediction
     new_data = pd.DataFrame({
         'project_size_USD_calculated': [project_size],
         'startyear': [startyear],
@@ -41,10 +44,6 @@ def main():
         'office_presence': [office_presence],
         'external_evaluator': [external_evaluator]
     })
-
-    # Load the trained model
-    model_path = 'model.joblib'
-    model = joblib.load(model_path)
 
     # Predict the success of the project
     if st.button('Predict'):
