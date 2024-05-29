@@ -4,7 +4,7 @@ import joblib
 
 # Load your data
 df5 = pd.read_csv('df5.csv')
-df5.dropna(inplace=True)
+df5 = df5.dropna()
 
 # Define the main function to create and run the app
 def main():
