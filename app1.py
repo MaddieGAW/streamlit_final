@@ -24,9 +24,11 @@ def main():
     office_presence = st.selectbox('Office Presence', df5['office_presence'].unique())
     external_evaluator = st.selectbox('External Evaluator', df5['external_evaluator'].unique())
 
-    # Load the trained model
+    # Load the trained model and feature columns
     model_path = 'model.joblib'
+    columns_path = 'model_columns.joblib'
     model = joblib.load(model_path)
+    model_columns = joblib.load(columns_path)
 
     # Prepare new data for prediction
     new_data = pd.DataFrame({
@@ -54,10 +56,10 @@ def main():
     new_data_encoded = df_encoded.tail(1)
 
     # Ensure new_data_encoded has the same columns as the model's training data
-    missing_cols = set(X.columns) - set(new_data_encoded.columns)
+    missing_cols = set(model_columns) - set(new_data_encoded.columns)
     for col in missing_cols:
         new_data_encoded[col] = 0
-    new_data_encoded = new_data_encoded[X.columns]
+    new_data_encoded = new_data_encoded[model_columns]
 
     # Predict the success of the project
     if st.button('Predict'):
