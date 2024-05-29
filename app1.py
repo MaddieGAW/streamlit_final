@@ -56,6 +56,10 @@ def main():
     # Separate the new encoded data
     new_data_encoded = df_encoded.tail(1)
 
+    # Print out the columns of new_data_encoded and model_columns
+    st.write("Columns of new_data_encoded:", new_data_encoded.columns)
+    st.write("Model columns:", model_columns)
+
     # Ensure new_data_encoded has the same columns as the model's training data
     missing_cols = set(model_columns) - set(new_data_encoded.columns)
     for col in missing_cols:
