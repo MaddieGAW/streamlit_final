@@ -1,117 +1,60 @@
-{
- "cells": [
-  {
-   "cell_type": "code",
-   "execution_count": 4,
-   "id": "1b8c2c3d-4d92-4c06-9581-b5ff949723b8",
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "import streamlit as st\n",
-    "import pandas as pd\n",
-    "from sklearn.compose import ColumnTransformer\n",
-    "from sklearn.pipeline import Pipeline\n",
-    "from sklearn.preprocessing import StandardScaler, OneHotEncoder\n",
-    "from sklearn.ensemble import RandomForestClassifier\n",
-    "from sklearn.metrics import accuracy_score, classification_report\n",
-    "import joblib\n",
-    "\n",
-    "df5 = pd.read_csv('df5.csv')\n",
-    "\n",
-    "# Define the main function to create and run the app\n",
-    "def main():\n",
-    "    st.title('Project Success Prediction')\n",
-    "\n",
-    "    # Add input fields for each feature\n",
-    "    project_size = st.number_input('Project Size (USD)', value=df5['project_size_USD_calculated'].mean())\n",
-    "    startyear = st.number_input('Start Year', value=df5['startyear'].median())\n",
-    "    evalyear = st.number_input('Evaluation Year', value=df5['evalyear'].median())\n",
-    "    eval_lag = st.number_input('Evaluation Lag', value=df5['eval_lag'].median())\n",
-    "    project_duration = st.number_input('Project Duration', value=df5['project_duration'].median())\n",
-    "\n",
-    "    donor = st.selectbox('Donor', df5['donor'].unique())\n",
-    "    country_code = st.selectbox('Country Code', df5['country_code_WB'].unique())\n",
-    "    region = st.selectbox('Region', df5['region'].unique())\n",
-    "    colonial_relations = st.selectbox('Colonial Relations', df5['colonial_relations'].unique())\n",
-    "    sector_code = st.selectbox('Sector Code', df5['sector_code'].unique())\n",
-    "    office_presence = st.selectbox('Office Presence', df5['office_presence'].unique())\n",
-    "    external_evaluator = st.selectbox('External Evaluator', df5['external_evaluator'].unique())\n",
-    "\n",
-    "    # Load your data\n",
-    "    new_data = pd.DataFrame({\n",
-    "        'project_size_USD_calculated': [project_size],\n",
-    "        'startyear': [startyear],\n",
-    "        'evalyear': [evalyear],\n",
-    "        'eval_lag': [eval_lag],\n",
-    "        'project_duration': [project_duration],\n",
-    "        'donor': [donor],\n",
-    "        'country_code_WB': [country_code],\n",
-    "        'region': [region],\n",
-    "        'colonial_relations': [colonial_relations],\n",
-    "        'sector_code': [sector_code],\n",
-    "        'office_presence': [office_presence],\n",
-    "        'external_evaluator': [external_evaluator]\n",
-    "    })\n",
-    "\n",
-    "    # Preprocess data\n",
-    "    numerical_features = ['project_size_USD_calculated', 'startyear', 'evalyear', 'eval_lag', 'project_duration']\n",
-    "    categorical_features = ['donor', 'country_code_WB', 'region', 'colonial_relations', 'sector_code', 'office_presence', 'external_evaluator']\n",
-    "\n",
-    "    numerical_transformer = Pipeline(steps=[\n",
-    "        ('scaler', StandardScaler())])\n",
-    "\n",
-    "    categorical_transformer = Pipeline(steps=[\n",
-    "        ('onehot', OneHotEncoder(handle_unknown='ignore'))])\n",
-    "\n",
-    "    preprocessor = ColumnTransformer(\n",
-    "        transformers=[\n",
-    "            ('num', numerical_transformer, numerical_features),\n",
-    "            ('cat', categorical_transformer, categorical_features)])\n",
-    "\n",
-    "    # Load the trained model\n",
-    "    clf = Pipeline(steps=[\n",
-    "        ('preprocessor', preprocessor),\n",
-    "        ('classifier', RandomForestClassifier(random_state=42))\n",
-    "    ])\n",
-    "\n",
-    "  # Load the trained model\n",
-    "    model_path = 'model.joblib'\n",
-    "    clf = joblib.load(model_path)\n",
-    "\n",
-    "    # Predict the success of the project\n",
-    "    if st.button('Predict'):\n",
-    "        prediction = clf.predict(new_data)\n",
-    "        st.subheader('Prediction')\n",
-    "        if prediction[0] == 1:\n",
-    "            st.write('The project is predicted to be successful.')\n",
-    "        else:\n",
-    "            st.write('The project is predicted to not be successful.')\n",
-    "\n",
-    "# Run the app\n",
-    "if __name__ == \"__main__\":\n",
-    "    main()\n"
-   ]
-  }
- ],
- "metadata": {
-  "kernelspec": {
-   "display_name": "Python 3 (ipykernel)",
-   "language": "python",
-   "name": "python3"
-  },
-  "language_info": {
-   "codemirror_mode": {
-    "name": "ipython",
-    "version": 3
-   },
-   "file_extension": ".py",
-   "mimetype": "text/x-python",
-   "name": "python",
-   "nbconvert_exporter": "python",
-   "pygments_lexer": "ipython3",
-   "version": "3.11.7"
-  }
- },
- "nbformat": 4,
- "nbformat_minor": 5
-}
+import streamlit as st
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+import joblib
+
+df5 = pd.read_csv('df5.csv')
+
+# Define the main function to create and run the app
+def main():
+    st.title('Project Success Prediction')
+
+    # Add input fields for each feature
+    project_size = st.number_input('Project Size (USD)', value=df5['project_size_USD_calculated'].mean())
+    startyear = st.number_input('Start Year', value=df5['startyear'].median())
+    evalyear = st.number_input('Evaluation Year', value=df5['evalyear'].median())
+    eval_lag = st.number_input('Evaluation Lag', value=df5['eval_lag'].median())
+    project_duration = st.number_input('Project Duration', value=df5['project_duration'].median())
+
+    donor = st.selectbox('Donor', df5['donor'].unique())
+    country_code = st.selectbox('Country Code', df5['country_code_WB'].unique())
+    region = st.selectbox('Region', df5['region'].unique())
+    colonial_relations = st.selectbox('Colonial Relations', df5['colonial_relations'].unique())
+    sector_code = st.selectbox('Sector Code', df5['sector_code'].unique())
+    office_presence = st.selectbox('Office Presence', df5['office_presence'].unique())
+    external_evaluator = st.selectbox('External Evaluator', df5['external_evaluator'].unique())
+
+    # Load your data
+    new_data = pd.DataFrame({
+        'project_size_USD_calculated': [project_size],
+        'startyear': [startyear],
+        'evalyear': [evalyear],
+        'eval_lag': [eval_lag],
+        'project_duration': [project_duration],
+        'donor': [donor],
+        'country_code_WB': [country_code],
+        'region': [region],
+        'colonial_relations': [colonial_relations],
+        'sector_code': [sector_code],
+        'office_presence': [office_presence],
+        'external_evaluator': [external_evaluator]
+    })
+
+    # Load the trained model
+    model_path = 'model.joblib'
+    model = joblib.load(model_path)
+
+    # Predict the success of the project
+    if st.button('Predict'):
+        prediction = model.predict(new_data)
+        st.subheader('Prediction')
+        if prediction[0] == 1:
+            st.write('The project is predicted to be successful.')
+        else:
+            st.write('The project is predicted to not be successful.')
+
+# Run the app
+if __name__ == "__main__":
+    main()
