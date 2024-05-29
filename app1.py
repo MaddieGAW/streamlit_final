@@ -2,9 +2,8 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# Load data
+# Load your data
 df5 = pd.read_csv('df5.csv')
-df5.dropna(inplace=True)
 
 # Define the main function to create and run the app
 def main():
@@ -45,9 +44,18 @@ def main():
         'external_evaluator': [external_evaluator]
     })
 
+    # Combine the new data with the original df5 to ensure all columns are present
+    df_combined = pd.concat([df5, new_data], ignore_index=True)
+
+    # Encode the combined data
+    df_encoded = pd.get_dummies(df_combined, drop_first=True)
+
+    # Separate the new encoded data
+    new_data_encoded = df_encoded.tail(1)
+
     # Predict the success of the project
     if st.button('Predict'):
-        prediction = model.predict(new_data)
+        prediction = model.predict(new_data_encoded)
         st.subheader('Prediction')
         if prediction[0] == 1:
             st.write('The project is predicted to be successful.')
